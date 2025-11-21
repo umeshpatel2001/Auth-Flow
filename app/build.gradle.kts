@@ -1,3 +1,5 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -5,6 +7,12 @@ plugins {
     id("androidx.room")
     id("com.google.devtools.ksp")
     id("com.google.dagger.hilt.android")
+}
+val keystorePropertiesFile = rootProject.file("keystore/keystore.properties")
+val keystoreProperties = Properties()
+
+if (keystorePropertiesFile.exists()) {
+    keystoreProperties.load(keystorePropertiesFile.inputStream())
 }
 
 android {
@@ -39,6 +47,22 @@ android {
     }
     buildFeatures {
         compose = true
+    }
+
+    signingConfigs {
+        create("release") {
+            storeFile = rootProject.file(keystoreProperties["storeFile"] as String)
+            storePassword = keystoreProperties["storePassword"] as String
+            keyAlias = keystoreProperties["keyAlias"] as String
+            keyPassword = keystoreProperties["keyPassword"] as String
+        }
+    }
+
+    buildTypes {
+        getByName("release") {
+            isMinifyEnabled = false // we'll tweak later in ProGuard phase
+            signingConfig = signingConfigs.getByName("release")
+        }
     }
 }
 
