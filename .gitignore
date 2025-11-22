@@ -31,7 +31,6 @@ captures/
 .idea/
 *.iml
 .gradle/
-gradle/
 
 keystore/
 *.jks
