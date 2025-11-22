@@ -15,6 +15,13 @@ if (keystorePropertiesFile.exists()) {
     keystoreProperties.load(keystorePropertiesFile.inputStream())
 }
 
+val localProps = Properties().apply {
+    val file = rootProject.file("local.properties")
+    if (file.exists()) {
+        load(file.inputStream())
+    }
+}
+
 android {
     namespace = "com.example.authflow"
     compileSdk = 36
@@ -27,6 +34,9 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        val reqresKey = localProps["REQRES_API_KEY"] as String? ?: ""
+        buildConfigField("String", "REQRES_API_KEY", "\"$reqresKey\"")
     }
 
     buildTypes {
@@ -47,6 +57,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 
     signingConfigs {
@@ -60,8 +71,33 @@ android {
 
     buildTypes {
         getByName("release") {
-            isMinifyEnabled = false // we'll tweak later in ProGuard phase
+            isMinifyEnabled = true           // 👈 enable R8
+            isShrinkResources = true         // optional: also remove unused resources (images, layouts etc.)
             signingConfig = signingConfigs.getByName("release")
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
+        }
+    }
+
+    flavorDimensions += "env"
+
+    productFlavors {
+        create("dev") {
+            dimension = "env"
+            applicationIdSuffix = ".dev"
+            versionNameSuffix = "-dev"
+
+            buildConfigField("String", "API_BASE_URL", "\"https://reqres.in/\"")
+        }
+
+        create("prod") {
+            dimension = "env"
+            // no suffix → final package name
+
+            buildConfigField("String", "API_BASE_URL", "\"https://reqres.in/\"")
+            // later you can change prod URL if needed
         }
     }
 }

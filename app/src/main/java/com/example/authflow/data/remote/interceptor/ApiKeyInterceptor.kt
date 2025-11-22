@@ -1,5 +1,6 @@
 package com.example.authflow.data.remote.interceptor
 
+import com.example.authflow.BuildConfig
 import okhttp3.Interceptor
 import okhttp3.Response
 import javax.inject.Inject
@@ -11,7 +12,7 @@ class ApiKeyInterceptor @Inject constructor() : Interceptor {
         val request = chain.request().newBuilder()
             // Add demo header — reqres doesn’t actually verify this value,
             // it just checks the presence of a header.
-            .addHeader("x-api-key", "reqres-free-v1")
+            .addHeader("x-api-key", BuildConfig.REQRES_API_KEY)
             .build()
         return chain.proceed(request)
     }

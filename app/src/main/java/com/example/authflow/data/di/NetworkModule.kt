@@ -1,5 +1,6 @@
 package com.example.authflow.data.di
 
+import com.example.authflow.BuildConfig
 import com.example.authflow.data.remote.api.AuthApi
 import com.example.authflow.data.remote.interceptor.ApiKeyInterceptor
 import dagger.Module
@@ -16,8 +17,6 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 object NetworkModule {
 
-    private const val BASE_URL = "https://reqres.in/"
-
     @Provides
     @Singleton
     fun provideOkHttpClient(apiKeyInterceptor : ApiKeyInterceptor): OkHttpClient {
@@ -32,7 +31,7 @@ object NetworkModule {
     @Singleton
     fun provideRetrofit(client: OkHttpClient): Retrofit =
         Retrofit.Builder()
-            .baseUrl(BASE_URL)
+            .baseUrl(BuildConfig.API_BASE_URL)
             .client(client)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
