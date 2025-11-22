@@ -35,7 +35,10 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
-        val reqresKey = localProps["REQRES_API_KEY"] as String? ?: ""
+        val reqresKeyFromFile = localProps["REQRES_API_KEY"] as String?
+        val reqresKeyFromEnv = System.getenv("REQRES_API_KEY")
+
+        val reqresKey = reqresKeyFromFile ?: reqresKeyFromEnv ?: ""
         buildConfigField("String", "REQRES_API_KEY", "\"$reqresKey\"")
     }
 
