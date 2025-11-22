@@ -36,5 +36,28 @@ jobs:
       - name: Make gradlew executable
         run: chmod +x gradlew
 
+      - name: Recreate keystore file
+        run: |
+          mkdir -p keystore
+          echo "${{ secrets.RELEASE_KEYSTORE_BASE64 }}" | base64 -d > keystore/release-key.jks
+
+      - name: Create keystore.properties
+        run: |
+          cat <<EOF > keystore/keystore.properties
+          storePassword=${{ secrets.RELEASE_STORE_PASSWORD }}
+          keyPassword=${{ secrets.RELEASE_KEY_PASSWORD }}
+          keyAlias=${{ secrets.RELEASE_KEY_ALIAS }}
+          storeFile=keystore/release-key.jks
+          EOF
+
       - name: Build Debug APK
         run: ./gradlew assembleDebug
+
+      - name: Build Prod Release AAB
+        run: ./gradlew bundleProdRelease
+
+      - name: Upload Prod Release AAB
+        uses: actions/upload-artifact@v4
+        with:
+          name: prod-release-aab
+          path: app/build/outputs/bundle/prodRelease/app-prod-release.aab
