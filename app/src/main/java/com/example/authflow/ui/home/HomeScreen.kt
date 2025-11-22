@@ -10,7 +10,7 @@ import androidx.compose.ui.Alignment
 @Composable
 fun HomeScreen() {
     Text(
-        text = "Welcome! 🎉 You’re logged in.",
+        text = "Welcome! 🎉 You’re logged in to app",
         modifier = Modifier.fillMaxSize().wrapContentSize(Alignment.Center)
     )
 }
